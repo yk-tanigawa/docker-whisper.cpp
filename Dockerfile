@@ -10,8 +10,6 @@ RUN mkdir /whisper && \
 
 WORKDIR /whisper
 
-ARG model
-RUN bash ./models/download-ggml-model.sh "${model}"
 RUN make main stream
 
 FROM debian:11 AS whisper
@@ -21,11 +19,6 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /root
-
-ARG model
-RUN mkdir /root/models
-COPY --from=build "/whisper/models/ggml-${model}.bin" "/root/models/ggml-${model}.bin"
 COPY --from=build /whisper/main /usr/local/bin/whisper
 COPY --from=build /whisper/stream /usr/local/bin/stream
 
